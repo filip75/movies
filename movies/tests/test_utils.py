@@ -27,7 +27,7 @@ class TestUtils:
 
         fetched_data = get_movie_data('Shrek')
 
-        assert None == fetched_data
+        assert None is fetched_data
 
     @patch('requests.get')
     def test_get_movie_data_white_spaces_upper(self, get_mock):
