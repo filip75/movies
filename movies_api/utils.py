@@ -1,9 +1,8 @@
-import urllib
 from typing import Optional
 
 import requests
 
-from movies.config import config
+from movies_api.config import config
 
 URL = 'http://www.omdbapi.com/?t={}&apikey={}'
 

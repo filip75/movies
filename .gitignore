@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 
 .idea
+movies_api/migrations
