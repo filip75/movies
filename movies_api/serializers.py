@@ -6,10 +6,11 @@ from movies_api.models import Movie, Comment
 class MovieSerializer(serializers.ModelSerializer):
     class Meta:
         model = Movie
-        fields = ('title', 'movie_data')
+        fields = ('id', 'title', 'movie_data')
 
 
-class CommentSerializer:
+class CommentSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment
-        fields = ('movie', 'content')
+        fields = ('id', 'movie', 'content')
