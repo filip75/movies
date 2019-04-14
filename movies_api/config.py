@@ -1,6 +1,9 @@
+import os
+
+
 class Config:
     config_dict = {
-        'api_key': 'cd1dc8e7'
+        'api_key': os.environ.get('MOVIES_APIKEY')
     }
 
     def __getattr__(self, item):
