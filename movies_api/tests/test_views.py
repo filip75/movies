@@ -2,69 +2,86 @@ import pytest
 from rest_framework.test import APIClient
 
 
+@pytest.fixture
+def api():
+    return APIClient()
+
+
 class TestMoviesView:
     @pytest.mark.usefixtures('save_shrek')
-    def test_get(self):
-        client = APIClient()
+    def test_get(self, api: APIClient):
+        response = api.get('/movies/')
 
-        response = client.get('/movies/')
-
-        assert 200 == response.status_code
+        assert response.status_code == 200
 
     @pytest.mark.usefixtures('save_shrek')
-    def test_get_title(self):
-        client = APIClient()
+    def test_get_id(self, api: APIClient):
+        response = api.get('/movies/1')
 
-        response = client.get('/movies/shrek')
-
-        assert 200 == response.status_code
+        assert response.status_code == 200
 
     @pytest.mark.usefixtures('transactional_db', 'omdbapi')
-    def test_post(self):
-        client = APIClient()
+    def test_post(self, api: APIClient):
+        response = api.post('/movies/', {'title': 'shrek'}, format='json')
 
-        response = client.post('/movies/', {'title': 'shrek'}, format='json')
-
-        assert 201 == response.status_code
+        assert response.status_code == 201
 
     @pytest.mark.usefixtures('save_shrek', 'omdbapi')
-    def test_post_exists(self):
-        client = APIClient()
+    def test_post_exists(self, api: APIClient):
+        response = api.post('/movies/', {'title': 'shrek'}, format='json')
 
-        response = client.post('/movies/', {'title': 'shrek'}, format='json')
-
-        assert 400 == response.status_code
+        assert response.status_code == 400
 
 
 class TestCommentsView:
     @pytest.mark.usefixtures('transactional_db')
-    def test_get(self):
-        client = APIClient()
+    def test_get(self, api: APIClient):
+        response = api.get('/comments/')
 
-        response = client.get('/comments/')
-
-        assert 200 == response.status_code
+        assert response.status_code == 200
 
     @pytest.mark.usefixtures('comment_shrek')
-    def test_get_movie(self):
-        client = APIClient()
+    def test_get_movie(self, api: APIClient):
+        response = api.get('/comments/movies/1')
 
-        response = client.get('/comments/movies/1')
-
-        assert 200 == response.status_code
+        assert response.status_code == 200
 
     @pytest.mark.usefixtures('save_shrek')
-    def test_post(self):
-        client = APIClient()
+    def test_post(self, api: APIClient):
+        response = api.post('/comments/', {'movie': 1, 'content': '123'}, format='json')
 
-        response = client.post('/comments/', {'movie': 1, 'content': '123'}, format='json')
-
-        assert 201 == response.status_code
+        assert response.status_code == 201
 
     @pytest.mark.django_db
-    def test_post_wrong_movie(self):
-        client = APIClient()
+    def test_post_wrong_movie(self, api: APIClient):
+        response = api.post('/comments/', {'movie': 1, 'content': '123'}, format='json')
 
-        response = client.post('/comments/', {'movie': 1, 'content': '123'}, format='json')
+        assert response.status_code == 400
 
-        assert 400 == response.status_code
+
+@pytest.mark.django_db
+class TestTopView:
+    def test_get(self, api: APIClient):
+        response = api.get('/top/')
+
+        assert response.status_code == 200
+
+    def test_get_start(self, api: APIClient):
+        response = api.get('/top/?start_date=2018-01-01')
+
+        assert response.status_code == 200
+
+    def test_get_end(self, api: APIClient):
+        response = api.get('/top/?end_date=2018-01-01')
+
+        assert response.status_code == 200
+
+    def test_get_start_end(self, api: APIClient):
+        response = api.get('/top/?start_date=2018-01-01&end_date=2018-01-02')
+
+        assert response.status_code == 200
+
+    def test_get_wrong_date_format(self, api: APIClient):
+        response = api.get('/top/?start_date=01-01-2018')
+
+        assert response.status_code == 400

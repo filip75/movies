@@ -10,7 +10,6 @@ class MovieSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Comment
-        fields = ('id', 'movie', 'content')
+        fields = ('id', 'movie', 'content', 'date')

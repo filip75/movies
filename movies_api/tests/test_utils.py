@@ -12,13 +12,13 @@ class TestUtils:
     def test_get_movie_data(self):
         fetched_data = get_movie_data('Shrek')
 
-        assert SHREK_JSON == fetched_data
+        assert fetched_data == SHREK_JSON
 
     @pytest.mark.usefixtures('omdbapi')
     def test_get_movie_data_fail(self):
         fetched_data = get_movie_data('Shrek 2')
 
-        assert None is fetched_data
+        assert fetched_data is None
 
     @patch('requests.get')
     def test_get_movie_data_white_spaces_upper(self, get_mock):
