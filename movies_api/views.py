@@ -11,7 +11,7 @@ from rest_framework.views import APIView
 
 from movies_api.models import Movie, Comment
 from movies_api.serializers import MovieSerializer, CommentSerializer
-from movies_api.utils import get_movie_data
+from movies_api.utils import get_movie_data, FetchMovieDataError
 
 TOTAL_COMMENTS = 'total_comments'
 RANK = 'rank'
@@ -29,8 +29,11 @@ class MoviesView(APIView):
 
     @staticmethod
     def post(request: Request):
-        title = request.data.get('title', '')
-        movie_data = dumps(get_movie_data(title))
+        try:
+            title = request.data.get('title', '')
+            movie_data = dumps(get_movie_data(title))
+        except FetchMovieDataError:
+            return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         request.data['movie_data'] = movie_data
         serializer = MovieSerializer(data=request.data)
         if serializer.is_valid():

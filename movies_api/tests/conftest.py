@@ -2,6 +2,7 @@ from json import dumps
 from unittest.mock import patch, Mock
 
 import pytest
+from requests.exceptions import ConnectionError
 
 from movies_api.config import config
 from movies_api.models import Movie, Comment
@@ -10,6 +11,7 @@ from movies_api.utils import URL
 SHREK_JSON = {'Title': 'Shrek', 'Year': '2001', 'Rated': 'PG', 'Released': '18 May 2001', 'Runtime': '90 min',
               'Genre': 'Animation, Adventure, Comedy, Family, Fantasy', 'Response': 'True'}
 FAIL_JSON = {'Response': 'False'}
+WRONG_URL = 'WRONG'
 
 
 @pytest.fixture
@@ -45,6 +47,8 @@ def omdbapi():
         def side_effect(url: str):
             if url == URL.format('shrek', config.api_key):
                 return shrek_request
+            elif WRONG_URL in url:
+                raise ConnectionError
             return not_found_mock
 
         get_mock.side_effect = side_effect

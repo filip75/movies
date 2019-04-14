@@ -1,4 +1,5 @@
 from datetime import datetime
+from unittest.mock import patch
 
 import pytest
 from rest_framework.test import APIClient
@@ -40,6 +41,13 @@ class TestMoviesView:
         response = api.post('/movies/', {'title': 'shrek'}, format='json')
 
         assert response.status_code == 400
+
+    @patch('movies_api.utils.URL', "WRONG{}{}")
+    @pytest.mark.usefixtures('omdbapi')
+    def test_post_connection_error(self, api: APIClient):
+        response = api.post('/movies/', {'title': 'shrek'}, format='json')
+
+        assert response.status_code == 500
 
 
 class TestCommentsView:

@@ -4,7 +4,7 @@ import pytest
 
 from movies_api.config import config
 from movies_api.tests.conftest import SHREK_JSON
-from movies_api.utils import get_movie_data, URL
+from movies_api.utils import get_movie_data, URL, FetchMovieDataError
 
 
 class TestUtils:
@@ -25,3 +25,9 @@ class TestUtils:
         get_movie_data('    ShRek    ')
 
         get_mock.assert_called_with(URL.format('shrek', config.api_key))
+
+    @pytest.mark.usefixtures('omdbapi')
+    @patch('movies_api.utils.URL', "WRONG{}{}")
+    def test_get_movie_data_connection_error(self):
+        with pytest.raises(FetchMovieDataError):
+            get_movie_data('shrek')
