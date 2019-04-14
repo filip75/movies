@@ -1,3 +1,4 @@
+from json import dumps
 from unittest.mock import patch, Mock
 
 import pytest
@@ -12,16 +13,25 @@ FAIL_JSON = {'Response': 'False'}
 
 
 @pytest.fixture
-def save_shrek(transactional_db) -> Movie:
-    movie = Movie(id=1, title='shrek', movie_data='')
-    movie.save()
-    return movie
+def shrek_movie() -> Movie:
+    return Movie(id=1, title='shrek', movie_data=dumps(SHREK_JSON))
 
 
 @pytest.fixture
-def comment_shrek(save_shrek: Movie):
-    comment = Comment(movie=save_shrek, content='')
-    comment.save()
+def save_shrek(transactional_db, shrek_movie: Movie) -> Movie:
+    shrek_movie.save()
+    return shrek_movie
+
+
+@pytest.fixture
+def shrek_comment(save_shrek: Movie) -> Comment:
+    return Comment(movie=save_shrek, content='shrek comment')
+
+
+@pytest.fixture
+def comment_shrek(shrek_comment: Comment) -> Comment:
+    shrek_comment.save()
+    return shrek_comment
 
 
 @pytest.fixture
